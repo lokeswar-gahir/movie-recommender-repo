@@ -1,0 +1,62 @@
+{% extends 'base_auth.html' %}
+
+{% block pageTitle %}
+User Page
+{% endblock %}
+
+{% block navTitle %}
+User Authentication Project
+{% endblock %}
+
+{% block navButtons %}
+<a href="/id-analyzer" class="btn btn-outline-success text-nowrap me-2" type="button" role="button">Reviews by ID</a>
+<a class="btn btn-outline-success text-nowrap me-2" href="/search-movies-form" role="button">Movies by URL</a>
+{% endblock %}
+
+{% block content %}
+<div class="container card mt-3">
+    <div class="text-center align-middle m-4">
+        <h1 class="mb-4">Welcome, {{ session["user"] }}!!!</h1>
+        <h5 class="mb-4">Session Start Time : {{ session['start_time'] }}</h5>
+        <h5 class="mb-4">Session End Time : {{ session['end_time'] }}</h5>
+        <h3 class="mb-4" id="demo"></h3>
+        <div>
+            <a class="btn btn-outline-warning me-2" type="button" id="mode" href="/logout">Log Out</a>
+            <a class="btn btn-outline-danger me-2" type="button" id="mode" href="/delete_account">Delete Account</a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Converting string to required date format 
+    let deadline = new Date("{{ session['end_time'] }}").getTime();
+
+    // To call defined fuction every second
+    let x = setInterval(function () {
+        // Getting current time in required format
+        let now = new Date().getTime();
+
+        // Calculating the difference
+        let t = deadline - now;
+
+        // Getting value of days, hours, minutes, seconds
+        let days = Math.floor(t / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((t % (1000 * 60)) / 1000);
+
+        // Output the remaining time
+        document.getElementById("demo").innerHTML = "Your session expires in : " + days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+        // Output for over time
+        if (t < 0) {
+            clearInterval(x);
+            document.getElementById("demo").innerHTML = "Your session EXPIRED!!! Please log in again.";
+        }
+    }, 1000);
+</script>
+{% endblock %}

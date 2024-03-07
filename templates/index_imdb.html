@@ -1,0 +1,30 @@
+{% extends 'base_auth.html' %}
+
+{% block pageTitle %}
+IMDB Reviews
+{% endblock %}
+
+{% block navTitle %}
+IMDB Reviews Analyzer
+{% endblock %}
+
+{% block navButtons %}
+<a class="btn btn-outline-success text-nowrap me-2" href="/user" role="button">Dashboard</a>
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+{% block content %}
+<div class="container card mt-3">
+  <form action="/reviews" method="post">
+    <div class="mb-3">
+      <label for="imdb-id" class="form-label mt-2"><h3>IMDB ID</h3></label>
+      <input type="text" class="form-control" id="imdb-id" name="id">
+    </div>
+    <button type="submit" class="btn btn-outline-primary text-nowrap mb-3" onclick="loading()">Submit</button>
+  </form>
+</div>
+{% block scripts %}
+{% endblock %}
+
+{% endblock content %}
