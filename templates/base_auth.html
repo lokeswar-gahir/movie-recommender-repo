@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="en" data-bs-theme="dark">
-
+<script>
+    if (sessionStorage.getItem("theme")){
+        document.querySelector('html').setAttribute('data-bs-theme', sessionStorage.getItem("theme"))
+    }
+</script>
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -33,6 +37,15 @@
                 
             {% endblock %}
             <button class="btn btn-outline-success text-nowrap me-2" type="button" id="mode">Light Mode</button>
+            <script>
+                const mode_btn = document.querySelector('#mode')
+                if (sessionStorage.getItem("theme") == "light"){
+                    mode_btn.innerText="Dark Mode"
+                }
+                else{
+                    mode_btn.innerText="Light Mode"
+                }
+            </script>
         </div>
     </nav>
     {% with messages = get_flashed_messages(with_categories=True) %}
