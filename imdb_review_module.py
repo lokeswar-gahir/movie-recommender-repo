@@ -38,6 +38,7 @@ class Reviews:
         count=0
         while True:
             r = self.session.get(url, headers=self.get_headers())
+            # r = self.session.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0"})
             if r.status_code==200:
                 break
             print(f"\n({r.status_code})Requesting again...",end="")
@@ -51,14 +52,11 @@ class Reviews:
         total_reviews_div = self.soup.find("div", class_="header")
         # self.title = self.soup.find("div",class_="parent").text.strip().replace(" ", "").replace("\n"," ")
         self.title = self.soup.find("title").text.split(" - ")[0]
-        print(self.title)
         self.total_reviews = int(total_reviews_div.div.text.split()[0].replace(",",""))
         print(self.get_df(lister_list))
         print(f"Total number of reviews are: {self.total_reviews}")
         if self.total_reviews<25:
-            # close_conn(r)
             return self.df
-        # close_conn(r)
         return self.df
     def add_more(self,imdb_id):
         url = f"https://www.imdb.com/title/{imdb_id}/reviews/_ajax?ref_=undefined&paginationKey={self.key}"
@@ -111,4 +109,4 @@ class Reviews:
         print("Session Closed.")
 if __name__ == "__main__":
     r = Reviews()
-    r.get_reviews("tt8108274")
+    r.get_reviews("tt26612950")

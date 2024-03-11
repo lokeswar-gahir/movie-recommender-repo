@@ -340,5 +340,37 @@ def df_filter():
     except Exception as e:
         return render_template("error_img_scrap.html", error=str(e))
 
+
+@app.route("/imdb-search", methods=["POST"])
+@in_session
+def imdb_search():
+    movie = request.form.get("movieName")
+    uri = f"https://www.imdb.com/find/?q={movie}"
+    response = requests.get(uri, headers=r.get_headers())
+    response.raise_for_status()
+    if response.status_code == 200:
+        soup = bs(response.content, "html.parser")
+        box = soup.find_all("section", attrs={"data-testid": "find-results-section-title"})[0]
+
+        lis = box.ul.findChildren("li" , recursive=False)
+        image_links = list()
+        movie_names = list()
+        movie_years = list()
+        movie_id = list()
+        movie_link = list()
+        for li in lis:
+            movie_title = li.findChildren("div", recursive=False)[1].a
+            href = movie_title.get("href")
+            m_url = "https://www.imdb.com/" + href
+
+            image_links.append(li.find("img").get("src") if li.find("img") else "not found")
+            movie_names.append(movie_title.text)
+            movie_years.append(li.findChildren("div", recursive=False)[1].ul.li.text)
+            movie_id.append(href.split("/")[2])
+            movie_link.append(m_url)
+
+        movie_details = zip(movie_names, movie_years, image_links, movie_id, movie_link)
+        return render_template("user_auth.html", movies = list(movie_details))
+
 if __name__=="__main__":
     app.run(debug=True)

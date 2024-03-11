@@ -20,9 +20,47 @@ User Authentication Project
         <h5 class="mb-4">Session Start Time : {{ session['start_time'] }}</h5>
         <h5 class="mb-4">Session End Time : {{ session['end_time'] }}</h5>
         <h3 class="mb-4" id="demo"></h3>
-        <div>
-            <a class="btn btn-outline-warning me-2" type="button" id="mode" href="/logout">Log Out</a>
-            <a class="btn btn-outline-danger me-2" type="button" id="mode" href="/delete_account">Delete Account</a>
+
+        <div class="container card p-3 mt-3">
+            <form action="/imdb-search" method="post" id="f1">
+              <div class="mb-3">
+                <input type="text" class="form-control" id="exampleInputEmail1" name="movieName" placeholder="Enter any movie name" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="display:block;">Search</button>
+              </form>
+        </div>
+        {% if movies %}
+        <div class="container card p-3 mt-5">
+            <div class="row row-cols-1 row-cols-md-1 g-4 p-4 pb-2">
+            {% for movie in movies %}
+            <div class="card m-2 ms-1">
+                <div class="row g-0 d-flex align-items-center">
+                  
+                  <div class="col-md-2">
+                    <img src="{{ movie[2] }}" class="img-thumbnail m-2" style="border:none;" alt="{{movie[0]}}">
+                  </div>
+
+                  <div class="col-md-5">
+                    <div class="card-body">
+                      <h5 class="card-title"><a href="{{ movie[4] }}">{{ movie[0] }}</a> ({{ movie[3] }})</h5>
+                      <p class="card-text">{{ movie[1] }}</p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-5">
+                    <a href="#" class="btn btn-outline-info text-nowrap me-2" target="_blank">Show Recommendation</a>
+                    <a href="/reviews?id={{movie[3]}}" class="btn btn-outline-primary text-nowrap me-2" target="_blank">Get reviews</a>
+                  </div>
+
+                </div>
+              </div>
+            {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+        <div class="mt-4">
+            <a class="btn btn-outline-warning me-2" role="button" type="button" id="mode" href="/logout">Log Out</a>
+            <a class="btn btn-outline-danger me-2" role="button" type="button" id="mode" href="/delete_account">Delete Account</a>
         </div>
     </div>
 </div>
