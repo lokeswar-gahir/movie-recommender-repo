@@ -5,28 +5,60 @@ from sentiment_analyzer import Analyzer
 from imdb_review_module import Reviews
 import requests
 from functools import wraps
-import pymongo # pip install pymongo[srv]
+from pymongo.errors import ConfigurationError # pip install pymongo[srv]
 from pymongo.mongo_client import MongoClient
 from flask import Flask, flash, redirect, render_template, request, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
 from datetime import timedelta, datetime
+from difflib import get_close_matches
+from pickle import load
 print("done.")
+
+movies_data = pd.read_csv("resources/movies_with_posters.csv")
+with open("resources/similarity_matrix.pkl","rb") as f:
+    similarity = load(f)
+
+def recommend(close_match):
+    index_of_the_movie = movies_data[movies_data.title == close_match]['index'].values[0]
+    similarity_score = list(enumerate(similarity[index_of_the_movie]))
+    sorted_similar_movies = sorted(similarity_score, key = lambda x:x[1], reverse = True)
+
+    movies_to_show = list()
+    for movie in sorted_similar_movies[:17]:
+        index = movie[0]
+        id = movies_data[movies_data.index == index]["title"].values[0]
+        movies_to_show.append(id)
+
+    return movies_to_show
+
+def validateTime():
+    return True if datetime.strptime(session.get("end_time"), r'%b %d, %Y %H:%M:%S')>=datetime.now() else False
 
 def in_session(func):
     @wraps(func)
     def inner():
         if "user" in session:
             try:
-                return func()
-            except IndexError:
-                return render_template("error_img_scrap.html", error="Please enter a movie URI")
+                if validateTime():
+                    return func()
+                else:
+                    global current_df, current_analyzed_df, r, a, ia, search_id_by_threads
+                    current_df = None
+                    current_analyzed_df = pd.DataFrame()
+                    r=Reviews()
+                    a=Analyzer()
+                    print(f'Logged out user: {session.get("user")}')
+                    session.clear()
+                    flash("Logged out due to session expire !!!","warning")
+                    print("Logged out due to session expire !!!")
+                    return redirect(url_for("login_page"))
             except Exception as e:
                 import traceback
                 traceback.print_exc()
                 return render_template("error_img_scrap.html", error=str(e))
         else:
-            flash("Looks like your session has expired","warning")
+            flash("You are UNAUTHORIZED or Your session has expired!!! Please try logging in again...", "danger")
             return redirect(url_for("login_page"))
     return inner
 
@@ -61,12 +93,39 @@ def connect_db(use_cloud=False):
             global cursor
             cursor = connection.cursor()
             print("done\n")
-    except pymongo.errors.ConfigurationError as e:
+    except ConfigurationError as e:
         print("\n\tERROR: Server not reachable !!!\n")
         exit(0)
     except Exception as e:
         print("\n\tERROR: Some ERROR occured !!!\n"+str(e))
         exit(0)
+
+def get_movie_details(movie_list: list):
+    image_links = list()
+    movie_id = list()
+    movie_names = list()
+    movie_years = list()
+    movie_links = list()
+    overviews = list()
+    genres = list()
+    actors = list()
+    directors = list()
+    for title in movie_list:
+        row = movies_data[movies_data.title == title]
+        imdb_id = row["imdb_id"].values[0]
+
+        image_links.append(row["imdb_full_cover"].values[0])
+        movie_id.append(imdb_id)
+        movie_names.append(row["title"].values[0])
+        movie_years.append(row["release_date"].values[0].split("-")[0])
+        movie_links.append("https://www.imdb.com/title/" + str(imdb_id))
+        overviews.append(row["overview"].values[0])
+        genres.append(" • ".join(str(row["genres"].values[0]).split()))
+        directors.append(row["director"].values[0])
+        
+    movie_details = list(zip(movie_names, movie_years, image_links, movie_id, movie_links, overviews, genres, directors))
+    return movie_details
+
 
 current_df = None
 current_analyzed_df = pd.DataFrame()
@@ -81,7 +140,7 @@ connect_db(use_cloud=False)
 
 app=Flask(__name__)
 app.secret_key = "something"
-app.permanent_session_lifetime = timedelta(minutes=5)
+app.permanent_session_lifetime = timedelta(minutes=15)
 
 @app.route("/")
 @app.route("/login", methods=["GET", "POST"])
@@ -187,19 +246,16 @@ def register_page():
         return render_template("register_auth.html")
 
 @app.route("/user")
-@error_protector
+@in_session
 def user_page():
     if "user" in session:
-        return render_template("user_auth.html")
-    else:
-        flash("You are UNAUTHORIZED or Your session has expired!!! Please try logging in again...", "danger")
-        return redirect(url_for("login_page"))
+        return render_template("user_auth.html", movieListForInputField = movies_data["title"].values)
 
 @app.route("/logout")
 @error_protector
 def logout():
     if "user" in session:
-        global current_df, current_analyzed_df, r, a
+        global current_df, current_analyzed_df, r, a, ia, search_id_by_threads
         current_df = None
         current_analyzed_df = pd.DataFrame()
         r=Reviews()
@@ -221,9 +277,7 @@ def delete_account():
     elif username:
         session.clear()
         if mongodb:
-            #mongodb
             collection.delete_one({"username":username})
-            #mongodb
         else:
             cursor.execute(f"DELETE FROM users WHERE username='{username}';")
             connection.commit()
@@ -340,37 +394,26 @@ def df_filter():
     except Exception as e:
         return render_template("error_img_scrap.html", error=str(e))
 
-
-@app.route("/imdb-search", methods=["POST"])
+@app.route("/movie-search-result", methods=["POST", "GET"])
 @in_session
-def imdb_search():
-    movie = request.form.get("movieName")
-    uri = f"https://www.imdb.com/find/?q={movie}"
-    response = requests.get(uri, headers=r.get_headers())
-    response.raise_for_status()
-    if response.status_code == 200:
-        soup = bs(response.content, "html.parser")
-        box = soup.find_all("section", attrs={"data-testid": "find-results-section-title"})[0]
+def movie_search_result():
+    if request.method == "POST":
+        movie = request.form.get("movieName")
+        list_of_all_titles = movies_data['title'].tolist()
+        find_close_match = get_close_matches(movie, list_of_all_titles, n=5, cutoff=0.5)
+        print(find_close_match)
+        movie_details = get_movie_details(find_close_match)
+        return render_template("search_result.html",main_movie = movie, movies = movie_details, movieListForInputField = movies_data["title"].values)
+    else:
+        return render_template("search_result.html", movieListForInputField = movies_data["title"].values)      
 
-        lis = box.ul.findChildren("li" , recursive=False)
-        image_links = list()
-        movie_names = list()
-        movie_years = list()
-        movie_id = list()
-        movie_link = list()
-        for li in lis:
-            movie_title = li.findChildren("div", recursive=False)[1].a
-            href = movie_title.get("href")
-            m_url = "https://www.imdb.com/" + href
-
-            image_links.append(li.find("img").get("src") if li.find("img") else "not found")
-            movie_names.append(movie_title.text)
-            movie_years.append(li.findChildren("div", recursive=False)[1].ul.li.text)
-            movie_id.append(href.split("/")[2])
-            movie_link.append(m_url)
-
-        movie_details = zip(movie_names, movie_years, image_links, movie_id, movie_link)
-        return render_template("user_auth.html", movies = list(movie_details))
+@app.route("/recommendation")
+@in_session
+def recommendation():
+    movie_title = request.args.get("movieName")
+    recommended_movies = recommend(movie_title)
+    movie_details = get_movie_details(recommended_movies)
+    return render_template("recommendation.html", movieListForInputField = movies_data["title"].values, movies=movie_details[1:], main_movie = movie_details[0])
 
 if __name__=="__main__":
     app.run(debug=True)

@@ -9,8 +9,6 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- <link rel="shortcut icon" type="image/png" href="https://img.icons8.com/?size=256&id=9737&format=png"> -->
-    <!-- <link rel="shortcut icon" type="image/png" href="https://img.icons8.com/?size=256&id=9683&format=png"> -->
     <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/movie_favicon.png') }}">
 
     
@@ -33,11 +31,9 @@
     <!-- Navbar here -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <!-- <a class="navbar-brand">User Authentication Project</a> -->
             <a class="navbar-brand">{% block navTitle %}{% endblock %}</a>
         </div>
         <div class="d-flex">
-            <!-- <a href="/id-analyzer" class="btn btn-outline-success text-nowrap me-2" type="button" role="button">Reviews by ID</a> -->
             {% block navButtons %}
                 
             {% endblock %}

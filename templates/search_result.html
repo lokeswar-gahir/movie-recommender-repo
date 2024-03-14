@@ -1,0 +1,64 @@
+{% extends 'base_auth.html' %}
+
+{% block pageTitle %}
+Search Result
+{% endblock %}
+
+{% block navTitle %}
+Search Page
+{% endblock %}
+
+{% block navButtons %}
+<a class="btn btn-outline-success text-nowrap me-2" href="/user" role="button">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<div class="container card my-3 p-4">
+    <form action="/movie-search-result" method="post" role="search">
+        <div class="mb-3">
+            <h2><label for="exampleFormControlInput1" class="form-label" >Movie Name</label></h2>
+            <input type="text"  name="movieName" class="form-control" id="exampleFormControlInput1" list="movieNames" required>
+            <datalist id="movieNames">
+                {% for movieName in movieListForInputField %}
+                <option value="{{movieName}}" />
+                {% endfor %}
+            </datalist>
+        </div>
+        <button type="submit" class="btn btn-success me-2">Search</button>
+    </form>
+</div>
+
+{% if movies %}
+<div class="container card p-3 mt-5">
+    <h2 style="text-align: left;" class="ps-4">Showing Results for "{{ main_movie}}"</h2>
+    <div class="row row-cols-1 row-cols-md-1 g-4 p-4 pb-2">
+        {% for movie in movies %}
+        <div class="card m-2 ms-1">
+            <div class="row g-0 d-flex align-items-center">
+
+                <div class="col-md-2">
+                    <img src="{{ movie[2] }}" class="img-thumbnail m-2" style="border:none;" alt="{{movie[0]}}">
+                </div>
+
+                <div class="col-md-6 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{{ movie[4] }}">{{ movie[0] }}</a></h5>
+                        <p class="card-text"><b>({{ movie[1] }})</b></p>
+                        <!-- <p>({{ movie[1] }})</p> -->
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="/recommendation?movieName={{movie[0]}}" class="btn btn-outline-info text-nowrap m-2">Show
+                        Recommendation</a>
+                    <a href="/reviews?id={{movie[3]}}" class="btn btn-outline-primary text-nowrap m-2">Get
+                        reviews</a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

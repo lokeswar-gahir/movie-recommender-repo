@@ -9,14 +9,12 @@ IMDB Reviews Analyzer <strong>{{title if title else ""}}</strong>
 {% endblock %}
 
 {% block navButtons %}
-<a class="btn btn-outline-success text-nowrap me-2" href="/analyze-df" role="button" onclick="loading()">Analyze</a>
+<a class="btn btn-outline-success text-nowrap me-2" href="/analyze-df" role="button">Analyze</a>
 <a class="btn btn-outline-success text-nowrap me-2" href="/user" role="button">Dashboard</a>
 {% endblock %}
 
-{% block styles %}
-{% endblock %}
 {% block content %}
-<div class="container mt-3 mb-3"> 
+<div class="container mt-3 mb-3">
 <div class="mb-3">Showing <strong>{{curr_len}}</strong> of <strong>{{total}}</strong> reviews.</div>
   {% if analyzed %}
   <div class="btn-group">

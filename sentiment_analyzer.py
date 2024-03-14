@@ -4,9 +4,9 @@ import pandas as pd
 from nltk.stem.porter import PorterStemmer
 
 ps = PorterStemmer()
-with open("count_vectorizer_3000_new_again.pkl", "rb") as f1:
+with open("resources/count_vectorizer_3000_new_again.pkl", "rb") as f1:
     cv = pickle.load(f1)
-with open("Bernoulli_naive_bayes_again.pkl","rb") as f2:
+with open("resources/Bernoulli_naive_bayes_again.pkl","rb") as f2:
     clf = pickle.load(f2)
 
 def remove_html(x):
@@ -33,7 +33,6 @@ def preprocessing(review):
     return review
 def analyze(review):
     review=preprocessing(review)
-    # print(len(cv.get_feature_names_out()))
     vector = cv.transform(pd.Series(review)).toarray()
     pred = clf.predict(vector)
     return pred[0]
@@ -47,7 +46,4 @@ class Analyzer:
         data["sentiment"]=data.apply(to_apply, axis=1)
         return data
 if __name__=="__main__":
-    df = pd.read_csv("test1.csv")
-    # print(analyze(review0[-1]))
-    a = Analyzer()
-    print(a.perform(df))
+    pass

@@ -1,7 +1,8 @@
 import random
 import regex as re
 import pandas as pd
-from requests_html import HTMLSession
+# from requests_html import HTMLSession
+import requests
 from bs4 import BeautifulSoup as bs
 def clean_df(df):
     if len(df)!=0:
@@ -17,7 +18,7 @@ class Reviews:
         self.soup=None
         self.title=None
         self.total_reviews=None
-        self.session = HTMLSession()
+        self.session = requests
     def get_headers(self):
         user_agents = [
         "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0",
@@ -38,7 +39,6 @@ class Reviews:
         count=0
         while True:
             r = self.session.get(url, headers=self.get_headers())
-            # r = self.session.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0"})
             if r.status_code==200:
                 break
             print(f"\n({r.status_code})Requesting again...",end="")
@@ -47,10 +47,9 @@ class Reviews:
             count+=1
 
         print("done.")
-        self.soup = bs(r.html.html, "html.parser")
+        self.soup = bs(r.content, "html.parser")
         lister_list = self.soup.find("div", class_="lister-list")
         total_reviews_div = self.soup.find("div", class_="header")
-        # self.title = self.soup.find("div",class_="parent").text.strip().replace(" ", "").replace("\n"," ")
         self.title = self.soup.find("title").text.split(" - ")[0]
         self.total_reviews = int(total_reviews_div.div.text.split()[0].replace(",",""))
         print(self.get_df(lister_list))
@@ -73,7 +72,7 @@ class Reviews:
                 return "requested more than 20 times and still got nothing !!!"
             count+=1
         print("done.")
-        self.soup = bs(r.html.html, "html.parser")
+        self.soup = bs(r.content, "html.parser")
         lister_list = self.soup.find("div", class_="lister-list")
         print(self.get_df(lister_list))
         print(f"Total number of reviews are: {self.total_reviews}")
