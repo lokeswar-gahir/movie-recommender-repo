@@ -29,18 +29,18 @@ Search Page
 </div>
 
 {% if movies %}
-<div class="container card p-3 mt-5">
+<div class="container card p-3 mt-5 d-flex">
     <h2 style="text-align: left;" class="ps-4">Showing Results for "{{ main_movie}}"</h2>
-    <div class="row row-cols-1 row-cols-md-1 g-4 p-4 pb-2">
+    <div class="row row-cols-1 row-cols-md-1 g-4 p-4 pb-2 d-flex justify-content-left">
         {% for movie in movies %}
-        <div class="card m-2 ms-1">
+        <div class="card my-2 ms-1" style="max-width:80%;">
             <div class="row g-0 d-flex align-items-center">
 
                 <div class="col-md-2">
                     <img src="{{ movie[2] }}" class="img-thumbnail m-2" style="border:none;" alt="{{movie[0]}}">
                 </div>
 
-                <div class="col-md-6 text-center">
+                <div class="col-md-5 text-center">
                     <div class="card-body">
                         <h5 class="card-title"><a href="{{ movie[4] }}">{{ movie[0] }}</a></h5>
                         <p class="card-text"><b>({{ movie[1] }})</b></p>
@@ -48,7 +48,7 @@ Search Page
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <a href="/recommendation?movieName={{movie[0]}}" class="btn btn-outline-info text-nowrap m-2">Show
                         Recommendation</a>
                     <a href="/reviews?id={{movie[3]}}" class="btn btn-outline-primary text-nowrap m-2">Get

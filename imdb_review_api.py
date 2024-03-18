@@ -16,10 +16,11 @@ from pickle import load
 print("done.")
 
 movies_data = pd.read_csv("resources/movies_with_posters.csv")
-with open("resources/similarity_matrix.pkl","rb") as f:
+with open("resources/similarity_32.pkl","rb") as f:
     similarity = load(f)
 
 def recommend(close_match):
+    print(close_match)
     index_of_the_movie = movies_data[movies_data.title == close_match]['index'].values[0]
     similarity_score = list(enumerate(similarity[index_of_the_movie]))
     sorted_similar_movies = sorted(similarity_score, key = lambda x:x[1], reverse = True)
@@ -100,7 +101,7 @@ def connect_db(use_cloud=False):
         print("\n\tERROR: Some ERROR occured !!!\n"+str(e))
         exit(0)
 
-def get_movie_details(movie_list: list):
+def get_movie_details(movie_list: list, cmd=None):
     image_links = list()
     movie_id = list()
     movie_names = list()
@@ -114,7 +115,10 @@ def get_movie_details(movie_list: list):
         row = movies_data[movies_data.title == title]
         imdb_id = row["imdb_id"].values[0]
 
-        image_links.append(row["imdb_full_cover"].values[0])
+        if cmd:
+            image_links.append(row["imdb_small_cover"].values[0])
+        else:
+            image_links.append(row["imdb_full_cover"].values[0])
         movie_id.append(imdb_id)
         movie_names.append(row["title"].values[0])
         movie_years.append(row["release_date"].values[0].split("-")[0])
@@ -400,9 +404,9 @@ def movie_search_result():
     if request.method == "POST":
         movie = request.form.get("movieName")
         list_of_all_titles = movies_data['title'].tolist()
-        find_close_match = get_close_matches(movie, list_of_all_titles, n=5, cutoff=0.5)
+        find_close_match = get_close_matches(movie, list_of_all_titles, n=10, cutoff=0.6)
         print(find_close_match)
-        movie_details = get_movie_details(find_close_match)
+        movie_details = get_movie_details(find_close_match,"small_poster")
         return render_template("search_result.html",main_movie = movie, movies = movie_details, movieListForInputField = movies_data["title"].values)
     else:
         return render_template("search_result.html", movieListForInputField = movies_data["title"].values)      
