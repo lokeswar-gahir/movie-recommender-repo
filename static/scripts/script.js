@@ -3,10 +3,10 @@ document.querySelector('#mode').addEventListener('click', function (event) {
     if (modeBtn.innerText === 'Dark Mode') {
         document.querySelector('html').setAttribute('data-bs-theme', 'dark')
         modeBtn.innerText = "Light Mode";
-        sessionStorage.setItem("theme", 'dark')
+        localStorage.setItem("theme", 'dark')
     } else {
         document.querySelector('html').setAttribute('data-bs-theme', 'light')
         modeBtn.innerText = "Dark Mode";
-        sessionStorage.setItem("theme", 'light')
+        localStorage.setItem("theme", 'light')
     }
 })

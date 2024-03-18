@@ -20,7 +20,6 @@ with open("resources/similarity_32.pkl","rb") as f:
     similarity = load(f)
 
 def recommend(close_match):
-    print(close_match)
     index_of_the_movie = movies_data[movies_data.title == close_match]['index'].values[0]
     similarity_score = list(enumerate(similarity[index_of_the_movie]))
     sorted_similar_movies = sorted(similarity_score, key = lambda x:x[1], reverse = True)
@@ -109,7 +108,6 @@ def get_movie_details(movie_list: list, cmd=None):
     movie_links = list()
     overviews = list()
     genres = list()
-    actors = list()
     directors = list()
     for title in movie_list:
         row = movies_data[movies_data.title == title]
@@ -404,8 +402,9 @@ def movie_search_result():
     if request.method == "POST":
         movie = request.form.get("movieName")
         list_of_all_titles = movies_data['title'].tolist()
+        print(f"searching for: {movie}")
         find_close_match = get_close_matches(movie, list_of_all_titles, n=10, cutoff=0.6)
-        print(find_close_match)
+        print(f"found close match(s): {find_close_match}")
         movie_details = get_movie_details(find_close_match,"small_poster")
         return render_template("search_result.html",main_movie = movie, movies = movie_details, movieListForInputField = movies_data["title"].values)
     else:
@@ -417,6 +416,7 @@ def recommendation():
     movie_title = request.args.get("movieName")
     recommended_movies = recommend(movie_title)
     movie_details = get_movie_details(recommended_movies)
+    print(f"recommending for: {movie_title}")
     return render_template("recommendation.html", movieListForInputField = movies_data["title"].values, movies=movie_details[1:], main_movie = movie_details[0])
 
 if __name__=="__main__":

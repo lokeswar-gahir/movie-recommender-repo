@@ -44,15 +44,15 @@ Search Page
                     <div class="card-body">
                         <h5 class="card-title"><a href="{{ movie[4] }}">{{ movie[0] }}</a></h5>
                         <p class="card-text"><b>({{ movie[1] }})</b></p>
-                        <!-- <p>({{ movie[1] }})</p> -->
                     </div>
                 </div>
 
                 <div class="col-md-5">
-                    <a href="/recommendation?movieName={{movie[0]}}" class="btn btn-outline-info text-nowrap m-2">Show
-                        Recommendation</a>
-                    <a href="/reviews?id={{movie[3]}}" class="btn btn-outline-primary text-nowrap m-2">Get
-                        reviews</a>
+                    <form class="d-inline-flex" action="/recommendation" method="get">
+                        <input type="text" class="form-control visually-hidden" name="movieName" readonly value="{{movie[0]}}">
+                        <button type="submit" class="btn btn-outline-info text-nowrap m-2">Show Recommendation</button>
+                      </form>
+                    <a href="/reviews?id={{movie[3]}}" class="btn btn-outline-primary text-nowrap m-2">Get reviews</a>
                 </div>
 
             </div>

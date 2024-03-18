@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en" data-bs-theme="dark">
 <script>
-    if (sessionStorage.getItem("theme")){
-        document.querySelector('html').setAttribute('data-bs-theme', sessionStorage.getItem("theme"))
+    if (localStorage.getItem("theme")){
+        document.querySelector('html').setAttribute('data-bs-theme', localStorage.getItem("theme"))
     }
 </script>
 <head>
@@ -29,7 +29,7 @@
 
 <body>
     <!-- Navbar here -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand">{% block navTitle %}{% endblock %}</a>
         </div>
@@ -40,7 +40,7 @@
             <button class="btn btn-outline-success text-nowrap me-2" type="button" id="mode">Light Mode</button>
             <script>
                 const mode_btn = document.querySelector('#mode')
-                if (sessionStorage.getItem("theme") == "light"){
+                if (localStorage.getItem("theme") == "light"){
                     mode_btn.innerText="Dark Mode"
                 }
                 else{
