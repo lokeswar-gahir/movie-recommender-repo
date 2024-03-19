@@ -16,8 +16,8 @@ Search Page
 <div class="container card my-3 p-4">
     <form action="/movie-search-result" method="post" role="search">
         <div class="mb-3">
-            <h2><label for="exampleFormControlInput1" class="form-label" >Movie Name</label></h2>
-            <input type="text"  name="movieName" class="form-control" id="exampleFormControlInput1" list="movieNames" required>
+            <h2><label for="exampleFormControlInput1" class="form-label">Movie Name</label></h2>
+            <input type="text" name="movieName" class="form-control" id="exampleFormControlInput1" list="movieNames" required>
             <datalist id="movieNames">
                 {% for movieName in movieListForInputField %}
                 <option value="{{movieName}}" />
@@ -29,13 +29,12 @@ Search Page
 </div>
 
 {% if movies %}
-<div class="container card p-3 mt-5 d-flex">
-    <h2 style="text-align: left;" class="ps-4">Showing Results for "{{ main_movie}}"</h2>
-    <div class="row row-cols-1 row-cols-md-1 g-4 p-4 pb-2 d-flex justify-content-left">
+<div class="container">
+    <h2 class="d-flex justify-content-center m-2">Showing Results for "{{ main_movie}}"</h2>
+    <div class="row row-cols-1 p-4 pb-2 d-flex justify-content-center">
         {% for movie in movies %}
-        <div class="card my-2 ms-1" style="max-width:80%;">
-            <div class="row g-0 d-flex align-items-center">
-
+        <div class="card mb-2 ms-1" style="max-width:80%;">
+            <div class="row d-flex align-items-center">
                 <div class="col-md-2">
                     <img src="{{ movie[2] }}" class="img-thumbnail m-2" style="border:none;" alt="{{movie[0]}}">
                 </div>
@@ -51,7 +50,7 @@ Search Page
                     <form class="d-inline-flex" action="/recommendation" method="get">
                         <input type="text" class="form-control visually-hidden" name="movieName" readonly value="{{movie[0]}}">
                         <button type="submit" class="btn btn-outline-info text-nowrap m-2">Show Recommendation</button>
-                      </form>
+                    </form>
                     <a href="/reviews?id={{movie[3]}}" class="btn btn-outline-primary text-nowrap m-2">Get reviews</a>
                 </div>
 

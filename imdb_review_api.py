@@ -1,18 +1,21 @@
 print("importing dependencies...", end="")
-from bs4 import BeautifulSoup as bs
-import pandas as pd
-from sentiment_analyzer import Analyzer
-from imdb_review_module import Reviews
-import requests
-from functools import wraps
-from pymongo.errors import ConfigurationError # pip install pymongo[srv]
-from pymongo.mongo_client import MongoClient
-from flask import Flask, flash, redirect, render_template, request, url_for, session
-from werkzeug.security import generate_password_hash, check_password_hash
-import pymysql
-from datetime import timedelta, datetime
-from difflib import get_close_matches
-from pickle import load
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from bs4 import BeautifulSoup as bs
+    import pandas as pd
+    from sentiment_analyzer import Analyzer
+    from imdb_review_module import Reviews
+    import requests
+    from functools import wraps
+    from pymongo.errors import ConfigurationError # pip install pymongo[srv]
+    from pymongo.mongo_client import MongoClient
+    from flask import Flask, flash, redirect, render_template, request, url_for, session
+    from werkzeug.security import generate_password_hash, check_password_hash
+    import pymysql
+    from datetime import timedelta, datetime
+    from difflib import get_close_matches
+    from pickle import load
 print("done.")
 
 movies_data = pd.read_csv("resources/movies_with_posters.csv")
