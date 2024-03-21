@@ -1,14 +1,17 @@
 {% extends 'base_auth.html' %}
+
 {% block pageTitle %}
-Error Page
+    Error Page
 {% endblock %}
 
-{% block navTitle %}Error Page{% endblock %}
+{% block navTitle %}
+    Error Page
+{% endblock %}
 
 {% block content %}
-<div class="container card mt-3">
-<h1>Something went wrong</h1>
-<p style="color: crimson;">{{ error }}</p>
-<p>Please go back to the <a href="/">home page</a> and try again.</p>
-</div>
+    <div class="container card mt-3">
+        <h1>Something went wrong</h1>
+        <p style="color: crimson;">{{ error }}</p>
+        <p>Please go back to the <a href="/">home page</a> and try again.</p>
+    </div>
 {% endblock %}

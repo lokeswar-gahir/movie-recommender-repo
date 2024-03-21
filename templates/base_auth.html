@@ -40,7 +40,7 @@
             <button class="btn btn-outline-success text-nowrap me-2" type="button" id="mode">Light Mode</button>
             <script>
                 const mode_btn = document.querySelector('#mode')
-                if (localStorage.getItem("theme") == "light"){
+                if (localStorage.getItem("theme") === "light"){
                     mode_btn.innerText="Dark Mode"
                 }
                 else{

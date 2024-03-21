@@ -1,63 +1,62 @@
 {% extends 'base_auth.html' %}
 
 {% block pageTitle %}
-{{ title }} - Reviews
+    {{ title }} - Reviews
 {% endblock %}
 
-{% block navTitle %} 
-IMDB Reviews Analyzer <strong>{{title if title else ""}}</strong>
+{% block navTitle %}
+    IMDB Reviews Analyzer <strong>{{ title if title else "" }}</strong>
 {% endblock %}
 
 {% block navButtons %}
-<a class="btn btn-outline-success text-nowrap me-2" href="/analyze-df" role="button">Analyze</a>
-<a class="btn btn-outline-success text-nowrap me-2" href="/user" role="button">Dashboard</a>
+    <a class="btn btn-outline-success text-nowrap me-2" href="/analyze-df" role="button">Analyze</a>
+    <a class="btn btn-outline-success text-nowrap me-2" href="/user" role="button">Dashboard</a>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-3 mb-3">
-<div class="mb-3">Showing <strong>{{curr_len}}</strong> of <strong>{{total}}</strong> reviews.</div>
-  {% if analyzed %}
-  <div class="btn-group">
-      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Filter
-      </button>
-      <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="/df_filter?pos=all">All</a></li>
-          <li><a class="dropdown-item" href="/df_filter?pos=1">Positives</a></li>
-          <li><a class="dropdown-item" href="/df_filter?pos=0">Negatives</a></li>
-      </ul>
-  </div>
-  {% endif %}
-  {% if more %}
-      <a class="btn btn-primary" href="/more-reviews" role="button" onclick="loading()">More Reviews</a>
-  {% endif %}
-</div>
-{% if df.any() %}
-<div class="container">
-    {% for row in df %}
-    <div class="container p-3 card mt-3">
-      <p>
-          <b>{{ row[0] }}</b>, {{ row[1] }}
-      </p>
-      {% if analyzed %}
-      <p style="color : {{ '#13aa02' if row[3] == 1 else '#cb0a0a' }} ; ">
-          {{ row[2] }}
-      </p>
-      {% else %}
-      <p>
-          {{ row[2] }}
-      </p>
-      {% endif %}
+    <div class="container mt-3 mb-3">
+        <div class="mb-3">Showing <strong>{{ curr_len }}</strong> of <strong>{{ total }}</strong> reviews.</div>
+        {% if analyzed %}
+            <div class="btn-group">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    Filter
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/df_filter?pos=all">All</a></li>
+                    <li><a class="dropdown-item" href="/df_filter?pos=1">Positives</a></li>
+                    <li><a class="dropdown-item" href="/df_filter?pos=0">Negatives</a></li>
+                </ul>
+            </div>
+        {% endif %}
+        {% if more %}
+            <a class="btn btn-primary" href="/more-reviews" role="button" onclick="loading()">More Reviews</a>
+        {% endif %}
     </div>
-    {% endfor %}
-    {% if more %}
-    <a class="btn btn-primary mt-3 mb-3" href="/more-reviews" role="button" onclick="loading()">More Reviews</a>
+    {% if df.any() %}
+        <div class="container">
+            {% for row in df %}
+                <div class="container p-3 card mt-3">
+                    <p>
+                        <b>{{ row[0] }}</b>, {{ row[1] }}
+                    </p>
+                    {% if analyzed %}
+                        <p style="color : {{ '#13aa02' if row[3] == 1 else '#cb0a0a' }} ; ">
+                            {{ row[2] }}
+                        </p>
+                    {% else %}
+                        <p>
+                            {{ row[2] }}
+                        </p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if more %}
+                <a class="btn btn-primary mt-3 mb-3" href="/more-reviews" role="button" onclick="loading()">More
+                    Reviews</a>
+            {% endif %}
+        </div>
+    {% else %}
+        No data to display !!!
     {% endif %}
-</div>
-{% else %}
-No data to display !!!
-{% endif %}
 {% endblock content %}
-
-{% block scripts %}
-{% endblock %}

@@ -1,134 +1,156 @@
 {% extends 'base_auth.html' %}
 
 {% block pageTitle %}
-{{ main_movie[0] }} - Recommendation
+    {{ main_movie[0] }} - Recommendation
 {% endblock %}
 
 {% block navTitle %}
-Movie Recommendation Page
+    Movie Recommendation Page
 {% endblock %}
 
 {% block navButtons %}
-<div>
-<form action="/movie-search-result" method="post" class="d-flex" role="search">
-  <input class="form-control me-2" type="search" placeholder="Search" style="width:200px;" name="movieName" required aria-label="Search" list="movieNames">
-  <datalist id="movieNames">
-    {% for movieName in movieListForInputField %}
-    <option value="{{movieName}}"/>
-    {% endfor %}
-  </datalist>
-  <button type="submit" class="btn btn-success me-2">Search</button>
-</form>
-</div>
-<a class="btn btn-outline-success text-nowrap me-2" href="/user" role="button">Dashboard</a>
+    <div>
+        <form action="/movie-search-result" method="post" class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" style="width:200px;" name="movieName"
+                   required aria-label="Search" list="movieNames">
+            <datalist id="movieNames">
+                {% for movieName in movieListForInputField %}
+                    <option value="{{ movieName }}"/>
+                {% endfor %}
+            </datalist>
+            <button type="submit" class="btn btn-success me-2">Search</button>
+        </form>
+    </div>
+    <a class="btn btn-outline-success text-nowrap me-2" href="/user" role="button">Dashboard</a>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+    <div class="container">
 
-  <div class="card my-3 mt-5">
-    <div class="row g-0">
-      <div class="col-md-3 ">
-        <img src="{{main_movie[2]}}" class="img-fluid rounded-start" alt="main_movie[0]">
-        
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h2 class="card-title">{{main_movie[0]}}</h2>
-          <pre>({{main_movie[3]}})</pre>
-          <p class="card-text">{{main_movie[6]}}</p>
-          <p class="card-text">{{main_movie[1]}}</p>
-          <p class="card-text"><small class="text-body-secondary">{{main_movie[5]}}</small></p>
-          <div>
-          <p class="card-text m-0 p-0"><small>Director</small></p>
-          <p class="card-text">{{main_movie[7]}}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="my-3">
-    {% if movies %}
-    <div>
-      <h2 class="ps-4 text-center mt-3">Recommended Movies <b>({{main_movie[0]}})</b></h2>
-    </div>
-    <div class="mt-3 row d-flex justify-content-center g-4">
-      {% for movie in movies %}
-      <div class="card  p-2 m-3 num-div" style="width: 18rem;">
-        <div style="position: relative;">
-        <img src="{{movie[2]}}" class="card-img-top" alt="{{ movie[0] }}">
-        <h1 class="card-title pe-2 mb-0 num" style="position:absolute; bottom: 0; right:0; color: #fff; font-weight:900; font-size:100px; text-shadow: 5px 3px 5px #000;"></h1>
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">{{ movie[0]}}</h5>
-          <pre>({{movie[3]}})</pre>
-          <p class="card-text">{{ movie[1] }}</p>
-        </div>
-        <div class="card-footer">
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-outline-info m-2" data-bs-toggle="modal" data-bs-target="#exampleModal-{{movie[3]}}">
-            Details
-          </button>
-
-          <!-- Modal -->
-          <div class="modal fade" id="exampleModal-{{movie[3]}}" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">{{ movie[0] }}</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="card my-3 mt-5">
+            <div class="row g-0">
+                <div class="col-md-3 ">
+                    <img src="{{ main_movie[2] }}" class="img-fluid rounded-start" alt="main_movie[0]">
                 </div>
-                <div class="modal-body">
-                  <div class="my-3">
-                    <div class="row g-0">
-                      <div class="col-md-3">
-                        <img src="{{movie[2]}}" class="img-fluid card rounded-start p-2" alt="{{movie[0]}}">
-                      </div>
-                      <div class="col-md-8">
-                        <div class="card-body">
-                          <h2 class="card-title">{{movie[0]}}</h2>
-                          <pre>({{movie[3]}})</pre>
-                          <p class="card-text">{{movie[6]}}</p>
-                          <p class="card-text">{{movie[1]}}</p>
-                          <p class="card-text"><small class="text-body-secondary">{{movie[5]}}</small></p>
-                          <div>
-                            <p class="card-text m-0 p-0"><small>Director</small></p>
-                            <p class="card-text">{{movie[7]}}</p>
-                          </div>
-                        </div>
-                      </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ main_movie[0] }}</h2>
+                        <pre>({{ main_movie[3] }})</pre>
+                        <p class="card-text">{{ main_movie[6] }}</p>
+                        <p class="card-text">{{ main_movie[1] }}</p>
+                        <p class="card-text"><small class="text-body-secondary">{{ main_movie[5] }}</small></p>
+                        <p class="card-text mb-1 p-0"><b><small>Director</small></b></p>
+                        <p class="card-text">🧑🏻‍💼 {{ main_movie[7] }}</p>
                     </div>
-                  </div>
+                    <div class="text-end">
+                        <a href="/reviews?id={{ main_movie[3] }}" class="btn btn-primary text-nowrap mb-4">Get
+                            reviews</a>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                  <!-- <a href="/recommendation?movieName={{movie[0]}}" class="btn btn-outline-info text-nowrap m-2">Show Recommendation</a> -->
-                  <form action="/recommendation" method="get">
-                    <input type="text" class="form-control  visually-hidden" name="movieName" readonly value="{{movie[0]}}">
-                    <button type="submit" class="btn btn-outline-info text-nowrap m-2">Show Recommendation</button>
-                  </form>
-                  <!-- <a href="/recommendation?movieName={{movie[0]}}" class="btn btn-outline-info text-nowrap m-2">Show Recommendation</a> -->
-                </div>
-              </div>
             </div>
-          </div>
-
-          <a href="/reviews?id={{movie[3]}}" class="btn btn-outline-primary text-nowrap m-2">Get reviews</a>
-
         </div>
-      </div>
-      {% endfor %}
-      {% else %}
-      <p>No images found.</p>
+
+
+        <div class="my-3">
+            {% if movies %}
+                <div>
+                    <h2 class="ps-4 text-center mt-3">Recommended Movies <b>({{ main_movie[0] }})</b></h2>
+                </div>
+                <div class="mt-3 row d-flex justify-content-center g-4">
+                    {% for movie in movies %}
+                        <div class="card  p-2 m-3 num-div" style="width: 18rem;">
+                            <div style="position: relative;">
+                                <img src="{{ movie[2] }}" class="card-img-top" alt="{{ movie[0] }}">
+                                <h1 class="card-title pe-2 mb-0 num"
+                                    style="position:absolute; bottom: 0; right:0; color: #fff; font-weight:900; font-size:100px; text-shadow: 5px 3px 5px #000;"></h1>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ movie[0] }}</h5>
+                                <pre>({{ movie[3] }})</pre>
+                                <p class="card-text">{{ movie[1] }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-outline-info m-2" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal-{{ movie[3] }}">
+                                    Details
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal-{{ movie[3] }}" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">{{ movie[0] }}</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="my-3">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-3">
+                                                            <img src="{{ movie[2] }}"
+                                                                 class="img-fluid card rounded-start p-2"
+                                                                 alt="{{ movie[0] }}">
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div class="card-body">
+                                                                <h2 class="card-title">{{ movie[0] }}</h2>
+                                                                <pre>({{ movie[3] }})</pre>
+                                                                <p class="card-text">{{ movie[6] }}</p>
+                                                                <p class="card-text">{{ movie[1] }}</p>
+                                                                <p class="card-text"><small
+                                                                        class="text-body-secondary">{{ movie[5] }}</small>
+                                                                </p>
+                                                                <div>
+                                                                    <p class="card-text m-0 p-0"><small>Director</small>
+                                                                    </p>
+                                                                    <p class="card-text">{{ movie[7] }}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <!-- <a href="/recommendation?movieName={{movie[0]}}" class="btn btn-outline-info text-nowrap m-2">Show Recommendation</a> -->
+                                                <form action="/recommendation" method="get">
+                                                    <input type="text" class="form-control  visually-hidden"
+                                                           name="movieName" readonly value="{{ movie[0] }}">
+                                                    <button type="submit" class="btn btn-outline-info text-nowrap m-2">
+                                                        Show Recommendation
+                                                    </button>
+                                                </form>
+                                                <!-- <a href="/recommendation?movieName={{movie[0]}}" class="btn btn-outline-info text-nowrap m-2">Show Recommendation</a> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="/reviews?id={{ movie[3] }}" class="btn btn-outline-primary text-nowrap m-2">Get
+                                    reviews</a>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No images found.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
-  </div>
-</div>
 {% endblock %}
 {% block scripts %}
-<script>
-const divs = document.querySelectorAll(".num-div");let a=1;divs.forEach((i)=>{if (i.children[0].childNodes[1].attributes[0].nodeValue.length > 5){i.children[0].children[1].innerText=a;}a+=1;})
-</script>
+    <script>
+        const divs = document.querySelectorAll(".num-div");
+        let a = 1;
+        divs.forEach(function (i) {
+            if (i.children[0].childNodes[1].attributes[0].nodeValue.length > 5) {
+                i.children[0].children[1].innerText = a;
+            }
+            a += 1;
+        })
+    </script>
 {% endblock %}
