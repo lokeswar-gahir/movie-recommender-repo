@@ -3,11 +3,9 @@ import warnings
 print("importing dependencies...", end="")
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    from bs4 import BeautifulSoup
     import pandas as pd
     from sentiment_analyzer import Analyzer
     from imdb_review_module import Reviews
-    import requests
     from functools import wraps
     from pymongo.errors import ConfigurationError  # pip install pymongo[srv]
     from pymongo.mongo_client import MongoClient
@@ -30,7 +28,7 @@ def recommend(close_match):
     sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)
 
     movies_to_show = list()
-    for movie in sorted_similar_movies[:17]:
+    for movie in sorted_similar_movies[:16]:
         index = movie[0]
         id = movies_data[movies_data.index == index]["title"].values[0]
         movies_to_show.append(id)
@@ -63,7 +61,7 @@ def in_session(func):
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                return render_template("error_img_scrap.html", error=str(e))
+                return render_template("error_page.html", error=str(e))
         else:
             flash("You are UNAUTHORIZED or Your session has expired!!! Please try logging in again...", "danger")
             return redirect(url_for("login_page"))
@@ -79,7 +77,7 @@ def error_protector(func):
         except Exception as e:
             import traceback
             traceback.print_exc()
-            return render_template("error_img_scrap.html", error=str(e))
+            return render_template("error_page.html", error=str(e))
 
     return inner
 
@@ -206,7 +204,7 @@ def login_page():
             flash("You are in Session...", "primary")
             return redirect(url_for("user_page"))
         else:
-            return render_template("login_auth.html")
+            return render_template("login_page.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -262,14 +260,14 @@ def register_page():
         if "user" in session:
             flash("Logout to register new user", "warning")
             return redirect(url_for("user_page"))
-        return render_template("register_auth.html")
+        return render_template("register_page.html")
 
 
 @app.route("/user")
 @in_session
 def user_page():
     if "user" in session:
-        return render_template("user_auth.html", movieListForInputField=movies_data["title"].values)
+        return render_template("user_page.html", movieListForInputField=movies_data["title"].values)
 
 
 @app.route("/logout")
@@ -322,64 +320,23 @@ def id_analyzer():
     return render_template("index_imdb.html", analyzed=True)
 
 
-@app.route("/search-movies-form")
-@in_session
-def search_movies_form():
-    return render_template("index_img_scrap.html")
-
-
-@app.route("/search", methods=["POST"])
-@in_session
-def search():
-    url = request.form["url"]
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.content, "lxml")
-        try:
-            title = soup.find('div', class_="sc-491663c0-3 bdjVSf")
-            title = title.div.h1.text
-        except Exception as e:
-            return render_template("error_img_scrap.html", error=str(e))
-        res = soup.find_all("section", class_="ipc-page-section ipc-page-section--base celwidget")
-        cards = res[3].findChildren("div", recursive=False)[1].findChildren("div", recursive=False)[1].findChildren(
-            "div", recursive=False)
-        ids = list()
-        for i in cards:
-            curr_href = i.findChildren("a", recursive=False)[0].get('href')
-            mid = curr_href.split("/")[2]
-            ids.append(mid)
-        images = []
-        for image in res[3].find_all("img"):
-            image_url = image.get("src")
-            if image_url:
-                image_url = image_url.strip()
-                images.append({"url": image_url, "alt": image.get("alt")})
-        return render_template("results_img_scrap.html", title=title, len=len(images), images=images, ids=ids)
-    except requests.exceptions.RequestException as e:
-        return render_template("error_img_scrap.html", error=str(e))
-
-
 @app.route("/reviews", methods=["POST", "GET"])
 @in_session
 def reviews():
     if request.method == "POST":
         id = request.form['id']
         session["id"] = id
-    elif request.method == "GET":
+    else:
         id = request.args["id"]
         session["id"] = id
     if id != "":
         df = r.get_reviews(id)
         if isinstance(df, str):
-            return render_template("error_img_scrap.html", error=Exception("Enter a valid IMDB id."))
+            return render_template("error_page.html", error=Exception("Enter a valid IMDB id."))
         global current_df
         current_df = df.copy()
         more = (len(df) < r.total_reviews)
-        return render_template("show.html", title=r.title, df=df.values, total=r.total_reviews, more=more,
+        return render_template("reviews_page.html", title=r.title, df=df.values, total=r.total_reviews, more=more,
                                analyzed=False, curr_len=len(current_df))
     return "No id found !!!"
 
@@ -396,7 +353,7 @@ def more_reviews():
     current_df = df.copy()
     more = (len(df) < r.total_reviews)
     flash(f"Added {after - before} more reviews.", "info")
-    return render_template("show.html", title=r.title, df=df.values, total=r.total_reviews, more=more, analyzed=False,
+    return render_template("reviews_page.html", title=r.title, df=df.values, total=r.total_reviews, more=more, analyzed=False,
                            curr_len=len(current_df))
 
 
@@ -408,7 +365,7 @@ def analyze_df():
         more = (len(new_df) < r.total_reviews)
         global current_analyzed_df
         current_analyzed_df = new_df.copy()
-        return render_template("show.html", title=r.title, df=new_df.values, total=r.total_reviews, more=more,
+        return render_template("reviews_page.html", title=r.title, df=new_df.values, total=r.total_reviews, more=more,
                                analyzed=True, curr_len=len(current_df))
     else:
         return "No data is selected for analysis"
@@ -424,10 +381,10 @@ def df_filter():
         else:
             filtered_df = current_analyzed_df[current_analyzed_df["sentiment"] == int(pos)]
         more = (len(current_df) < r.total_reviews)
-        return render_template("show.html", title=r.title, df=filtered_df.values, total=len(current_df), more=more,
+        return render_template("reviews_page.html", title=r.title, df=filtered_df.values, total=len(current_df), more=more,
                                analyzed=True, curr_len=len(filtered_df))
     except Exception as e:
-        return render_template("error_img_scrap.html", error=str(e))
+        return render_template("error_page.html", error=str(e))
 
 
 @app.route("/movie-search-result", methods=["POST", "GET"])

@@ -5,13 +5,12 @@
 {% endblock %}
 
 {% block navTitle %}
-    User Authentication
+    User Dashboard
 {% endblock %}
 
 {% block navButtons %}
     <a href="/id-analyzer" class="btn btn-outline-success text-nowrap me-2" type="button" role="button">Reviews by
         ID</a>
-    <a class="btn btn-outline-success text-nowrap me-2" href="/search-movies-form" role="button">Movies by URL</a>
 {% endblock %}
 
 {% block content %}
@@ -44,8 +43,6 @@
             </div>
         </div>
     </div>
-
-
 {% endblock %}
 
 {% block scripts %}
@@ -53,7 +50,7 @@
         // Converting string to required date format
         let deadline = new Date("{{ session['end_time'] }}").getTime();
 
-        // To call defined fuction every second
+        // To call defined function every second
         let x = setInterval(function () {
             // Getting current time in required format
             let now = new Date().getTime();
